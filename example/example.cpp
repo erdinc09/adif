@@ -1,10 +1,3 @@
-# adif
-Another C++ Dependency Injection Framework
-
-
-# Usage
-
-```cpp
 #include <iostream>
 
 #include "dependencyprovider.h"
@@ -54,18 +47,3 @@ int main() {
   class1.foo();
   class2.foo();
 }
-```
-
-# Notes:
-
-* This library is not thread safe.
-* It is used for __already created__ objects, whose lifetime spans all prgorma time!
-* Single context is created (static).
-
-## if `DEPENDECY_CHECK` is enabled
-
-* For each `Injects(<TYPE>,<VARIABLE_NAME>)` additional debug areas allocated in stack.
-* If `adif::initilizeAndShutDown();` `std::runtime_error` is thrown with message.
-* If a dependency is not provided but injected, `std::runtime_error` is thrown with message. This message includes the variable name, file name and corresponding line information.
-
-In debug mode (while devolopment), we advise to enable `DEPENDECY_CHECK`. For deployment it can be disabled.
