@@ -59,12 +59,12 @@ int main() {
 # Notes:
 
 * This library is not thread safe.
-* It is used for __already created__ objects, whose lifetime spans all prgorma time!
+* It is used for __already created__ objects, whose lifetime spans all program time!
 * Single context is created (static).
 
 ## if `DEPENDECY_CHECK` is enabled
 
-* For each `Injects(<TYPE>,<VARIABLE_NAME>)` additional debug areas allocated in stack.
+* For each `Injects(<TYPE>,<VARIABLE_NAME>)` additional debug areas allocated.
 * If `adif::initilizeAndShutDown();` `std::runtime_error` is thrown with message.
 * If a dependency is not provided but injected, `std::runtime_error` is thrown with message. This message includes the variable name, file name and corresponding line information.
 
