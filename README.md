@@ -65,7 +65,7 @@ int main() {
 ## if `DEPENDECY_CHECK` is enabled
 
 * For each `Injects(<TYPE>,<VARIABLE_NAME>)` additional debug areas allocated.
-* If `adif::initilizeAndShutDown();` `std::runtime_error` is thrown with message.
+* If `adif::initilizeAndShutDown();` is not called, `std::runtime_error` is thrown with related message.
 * If a dependency is not provided but injected, `std::runtime_error` is thrown with message. This message includes the variable name, file name and corresponding line information.
 
 In debug mode (while devolopment), we advise to enable `DEPENDECY_CHECK`. For deployment it can be disabled.
