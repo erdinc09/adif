@@ -25,10 +25,10 @@ add_library(adif
     )
 
 #example
-add_executable(example
+add_executable(adif_example
     example/example.cpp)
-target_include_directories(example PRIVATE "di")
-target_link_libraries(example adif)
+target_include_directories(adif_example PRIVATE "di")
+target_link_libraries(adif_example adif)
 
 #tests
 file(GLOB TEST_SRC_FILES "${CMAKE_CURRENT_SOURCE_DIR}/test/*.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/test/*.h")
