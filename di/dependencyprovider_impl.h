@@ -39,7 +39,7 @@ class DependencyProvider final {
   std::unordered_map<int, void*> instances;
   static std::vector<IDIClient*> clientList;
   static DependencyProvider dependencyProvider;
-
+  static void clearFrameWork();
   static void initilizeAndShutDown();
   static void addClient(IDIClient* const client);
 
@@ -59,6 +59,7 @@ template <typename T>
 void DependencyProvider::provideDependency(T* instance) {
   auto hash = typeid(T).hash_code();
   if (!dependencyProvider.instances.emplace(hash, instance).second) {
+    clearFrameWork();
     throw std::invalid_argument(
         std::string(typeid(T).name())
             .append(" = (typeid(<interface type>).name()) is alredy registered "
@@ -73,9 +74,10 @@ T* DependencyProvider::getDependency() {
   if (itr1 != dependencyProvider.instances.end()) {
     return static_cast<T*>(itr1->second);
   } else {
-    throw std::invalid_argument(
-        std::string(typeid(T).name())
-            .append(" = (typeid(<interface type>).name()) is not found"));
+    // I do not throw ex here because if I do, there would be no detailed
+    // message. Later I throw std::runtime_error with detailed message with
+    // file,line and varible name.
+    return nullptr;
   }
 }
 }  // namespace internal

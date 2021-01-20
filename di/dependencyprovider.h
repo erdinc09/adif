@@ -91,6 +91,7 @@ class Injects final : public internal::IDIClient {
           .append(fileName)
           .append(":")
           .append(std::to_string(lineNumber));
+      internal::DependencyProvider::clearFrameWork();
       throw std::runtime_error(msg);
     }
   };
@@ -114,6 +115,7 @@ class Injects final : public internal::IDIClient {
   T* operator->() const {
 #ifdef DEPENDECY_CHECK
     if (dependency == nullptr) {
+      internal::DependencyProvider::clearFrameWork();
       std::string msg(
           "adif is not initilized, did you miss to call  "
           "\"adif::initilizeAndShutDown()\" ?");
@@ -125,6 +127,7 @@ class Injects final : public internal::IDIClient {
   operator T*() const {
 #ifdef DEPENDECY_CHECK
     if (dependency == nullptr) {
+      internal::DependencyProvider::clearFrameWork();
       std::string msg(
           "adif is not initilized, did you miss to call  "
           "\"adif::initilizeAndShutDown()\" ?");
