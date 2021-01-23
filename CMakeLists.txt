@@ -8,7 +8,7 @@ huntergate(URL "https://github.com/cpp-pm/hunter/archive/v0.23.279.tar.gz" SHA1 
 project(adif)
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-   set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+    set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 endif()
 
 set(CMAKE_CXX_STANDARD 17)
@@ -35,12 +35,14 @@ target_include_directories(adif_example PRIVATE "di")
 target_link_libraries(adif_example adif)
 
 #tests
-file(GLOB TEST_SRC_FILES "${CMAKE_CURRENT_SOURCE_DIR}/test/*.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/test/*.h")
-add_executable(adif_test ${TEST_SRC_FILES})
-target_include_directories(adif_test PRIVATE "di")
-target_link_libraries(adif_test GTest::gtest)
-target_link_libraries(adif_test GTest::gmock)
-target_link_libraries(adif_test adif)
+if(NOT CMAKE_SYSTEM_NAME STREQUAL "Windows") # disable for now, there is a linker problem...
+    file(GLOB TEST_SRC_FILES "${CMAKE_CURRENT_SOURCE_DIR}/test/*.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/test/*.h")
+    add_executable(adif_test ${TEST_SRC_FILES})
+    target_include_directories(adif_test PRIVATE "di")
+    target_link_libraries(adif_test GTest::gtest)
+    target_link_libraries(adif_test GTest::gmock)
+    target_link_libraries(adif_test adif)
 
-enable_testing()
-add_test(NAME adif_test COMMAND adif_test)
+    enable_testing()
+    add_test(NAME adif_test COMMAND adif_test)
+endif()
