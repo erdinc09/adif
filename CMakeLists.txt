@@ -7,6 +7,10 @@ huntergate(URL "https://github.com/cpp-pm/hunter/archive/v0.23.279.tar.gz" SHA1 
 
 project(adif)
 
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+   set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+endif()
+
 set(CMAKE_CXX_STANDARD 17)
 
 hunter_add_package(GTest)
