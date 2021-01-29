@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.12)
 
 # Use hunter to download and build some third party dependencies
-include("cmake/HunterGate.cmake")
+include("external/cmake/HunterGate.cmake")
 huntergate(URL "https://github.com/cpp-pm/hunter/archive/v0.23.279.tar.gz" SHA1 "0a8ede485c3e9c1ceed8ccb989ab6c0aba1f4db7")
 
 
