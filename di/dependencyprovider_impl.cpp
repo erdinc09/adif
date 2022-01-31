@@ -34,17 +34,18 @@ void DependencyProvider::addClient(IDIClient* const client) {
 }
 
 void DependencyProvider::initilizeAndShutDown() {
-  std::for_each(clientList.rbegin(), clientList.rend(), [](auto client) {
+  std::for_each(clientList.rbegin(), clientList.rend(), [](const auto& client) {
     client->provideDependencies(dependencyProvider);
   });
 
-  std::for_each(clientList.rbegin(), clientList.rend(), [](auto client) {
+  std::for_each(clientList.rbegin(), clientList.rend(), [](const auto& client) {
     client->getDependencies(dependencyProvider);
   });
 
 #ifdef DEPENDECY_CHECK
-  std::for_each(clientList.rbegin(), clientList.rend(),
-                [](auto client) { client->checkDependenciesInitilized(); });
+  std::for_each(clientList.rbegin(), clientList.rend(), [](const auto& client) {
+    client->checkDependenciesInitilized();
+  });
 #endif
   clearFrameWork();
 }
