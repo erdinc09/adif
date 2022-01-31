@@ -31,7 +31,6 @@ constexpr auto make_false() {
 }
 
 template <typename... types>
-
 class Provides {  // no final class and no private default constructor in order
                   // to show that  "more than 3 interface is not supported" in
                   // compile error, when not used appropriately

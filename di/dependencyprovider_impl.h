@@ -17,6 +17,7 @@
 #include <stdexcept>
 #include <string>
 #include <type_traits>
+#include <typeindex>
 #include <typeinfo>
 #include <unordered_map>
 #include <vector>
@@ -34,7 +35,6 @@ void initilizeAndShutDown();
 
 namespace internal {
 class IDIClient;
-
 class DependencyProvider final {
  private:
   DependencyProvider() = default;
@@ -48,9 +48,11 @@ class DependencyProvider final {
   template <typename T>
   T* getDependency();
 
-  std::unordered_map<int, void*> instances;
-  static std::vector<IDIClient*> clientList;
+  std::unordered_map<std::type_index, void*> instances;
+
+  inline static std::vector<IDIClient*> clientList;
   static DependencyProvider dependencyProvider;
+
   static void clearFrameWork();
   static void initilizeAndShutDown();
   static void addClient(IDIClient* const client);
@@ -69,8 +71,9 @@ class DependencyProvider final {
 
 template <typename T>
 void DependencyProvider::provideDependency(T* instance) {
-  auto hash = typeid(T).hash_code();
-  if (!dependencyProvider.instances.emplace(hash, instance).second) {
+  if (!dependencyProvider.instances
+           .emplace(std::type_index(typeid(T)), instance)
+           .second) {
     clearFrameWork();
     throw std::invalid_argument(
         std::string(typeid(T).name())
@@ -81,8 +84,7 @@ void DependencyProvider::provideDependency(T* instance) {
 
 template <typename T>
 T* DependencyProvider::getDependency() {
-  auto hash = typeid(T).hash_code();
-  auto itr1 = dependencyProvider.instances.find(hash);
+  auto itr1 = dependencyProvider.instances.find(std::type_index(typeid(T)));
   if (itr1 != dependencyProvider.instances.end()) {
     return static_cast<T*>(itr1->second);
   } else {

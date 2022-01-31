@@ -18,7 +18,6 @@
 
 namespace adif {
 namespace internal {
-std::vector<IDIClient*> DependencyProvider::clientList;
 
 DependencyProvider DependencyProvider::dependencyProvider;
 
