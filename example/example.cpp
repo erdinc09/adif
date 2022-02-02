@@ -43,7 +43,12 @@ class Class2 : Provides(Interface2to1) {
   }
 
  public:
-  void foo() { interface1to2->callInterface1to2(); }
+  void foo() {
+    interface1to2->callInterface1to2();
+
+    // cast is ok
+    Interface1to2* testToCast = interface1to2;
+  }
 
  private:
   Injects(Interface1to2, interface1to2);

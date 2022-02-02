@@ -46,6 +46,11 @@ class Class1 : Provides(Interface1to2) {
   Class1(IControl& control_) : control{control_} {};
   void callInterface1to2() override { control.callMe(); }
   void foo() { interface2to1->callInterface2to1(); }
+  void boo() {
+    // cast is also ok
+    Interface2to1* ptr = interface2to1;
+    ptr->callInterface2to1();
+  }
 
  private:
   Injects(Interface2to1, interface2to1);
@@ -66,7 +71,7 @@ class Class2 : Provides(Interface2to1) {
 };
 using ::testing::Exactly;
 
-TEST(SimpleTests, Test1) {
+TEST(SimpleTests, ShouldCallCallMeDirectly) {
   MockIControl mockKontrol{};
   EXPECT_CALL(mockKontrol, callMe()).Times(Exactly(1));
 
@@ -78,7 +83,19 @@ TEST(SimpleTests, Test1) {
   class1.foo();
 }
 
-TEST(SimpleTests, Test2) {
+TEST(SimpleTests, ShouldCallCallMeThroughPointer) {
+  MockIControl mockKontrol{};
+  EXPECT_CALL(mockKontrol, callMe()).Times(Exactly(1));
+
+  Class1 class1{mockKontrol};
+  Class2 class2{mockKontrol};
+
+  adif::initilizeAndShutDown();
+
+  class1.boo();
+}
+
+TEST(SimpleTests, ShouldCallCallMeDirectlyInBothDependencies) {
   MockIControl mockKontrol1{};
   MockIControl mockKontrol2{};
   EXPECT_CALL(mockKontrol1, callMe()).Times(Exactly(1));
@@ -94,7 +111,7 @@ TEST(SimpleTests, Test2) {
 }
 
 #ifdef DEPENDECY_CHECK
-TEST(SimpleTests, Test3) {
+TEST(SimpleTests, ShouldThrowExceptionWhenInitilizeAndShutDownNotCalled) {
   StubIControl stubIControl{};
 
   Class1 class1{stubIControl};
@@ -117,7 +134,7 @@ TEST(SimpleTests, Test3) {
 #endif
 
 #ifdef DEPENDECY_CHECK
-TEST(SimpleTests, Test4) {
+TEST(SimpleTests, ShouldThrowExceptionWhenDependencyNotFound) {
   StubIControl stubIControl{};
 
   Class1 class1{stubIControl};
@@ -126,7 +143,8 @@ TEST(SimpleTests, Test4) {
 }
 #endif
 
-TEST(SimpleTests, Test5) {
+TEST(SimpleTests,
+     ShouldThrowExceptionWhenSameInterfaceRegisteredMoreThanOneTime) {
   StubIControl stubIControl{};
 
   Class1 class1{stubIControl};
