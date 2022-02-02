@@ -46,8 +46,9 @@ class Class2 : Provides(Interface2to1) {
   void foo() {
     interface1to2->callInterface1to2();
 
-    // cast is ok
-    Interface1to2* testToCast = interface1to2;
+    // cast is also ok
+    Interface1to2* ptr{interface1to2};
+    ptr->callInterface1to2();
   }
 
  private:

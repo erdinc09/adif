@@ -48,7 +48,7 @@ class Class1 : Provides(Interface1to2) {
   void foo() { interface2to1->callInterface2to1(); }
   void boo() {
     // cast is also ok
-    Interface2to1* ptr = interface2to1;
+    Interface2to1* ptr{interface2to1};
     ptr->callInterface2to1();
   }
 
