@@ -47,7 +47,7 @@ class DependencyProvider final {
   ~DependencyProvider() = default;
 
   template <typename T>
-  void provideDependency(T* const instance);
+  void provideDependency(T* instance);
 
   template <typename T>
   T* getDependency();
@@ -90,7 +90,8 @@ void DependencyProvider::provideDependency(T* instance) {
     throw std::invalid_argument(
         std::string(std::type_index(typeid(T)).name())
             .append(" = (typeid(<interface type>).name()) is alredy registered "
-                    "before"));
+                    "before (use c++ name demangling tool, `llvm-cxxfilt -t` "
+                    "for clang ... )"));
   }
 }
 
