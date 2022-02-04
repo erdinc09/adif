@@ -34,3 +34,4 @@
 .DS_Store
 CMakeLists.txt.user
 cmake-build
+.vscode

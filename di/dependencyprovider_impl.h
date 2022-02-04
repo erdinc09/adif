@@ -32,15 +32,19 @@ template <typename...>
 class Provides;
 
 void initilizeAndShutDown();
+template <typename T>
+void provideInstance(const T& instance);
 
 namespace internal {
-class IDIClient;
+
+//class IDIClient;
+class IDIClientProvider;
+class IDIClientInjector;
+
 class DependencyProvider final {
  private:
   DependencyProvider() = default;
   ~DependencyProvider() = default;
-
-  void clear();
 
   template <typename T>
   void provideDependency(T* const instance);
@@ -49,16 +53,20 @@ class DependencyProvider final {
   T* getDependency();
 
   std::unordered_map<std::type_index, void*> instances;
+  std::vector<IDIClientProvider*> providersList;
+  std::vector<IDIClientInjector*> injectorsList;
 
-  inline static std::vector<IDIClient*> clientList;
   static DependencyProvider dependencyProvider;
 
-  static void clearFrameWork();
-  static void initilizeAndShutDown();
-  static void addClient(IDIClient* const client);
+  void clearFrameWork();
+  void initilizeAndShutDown();
+
+  void addClient(IDIClientProvider* const client);
+  void addClient(IDIClientInjector* const client);
 
   /*friends*/
-  friend class IDIClient;
+  friend class IDIClientProvider;
+  friend class IDIClientInjector;
 
   template <typename T>
   friend class ::adif::Injects;
@@ -67,6 +75,9 @@ class DependencyProvider final {
   friend class ::adif::Provides;
 
   friend void ::adif::initilizeAndShutDown();
+
+  template <typename T>
+  friend void ::adif::provideInstance(const T& instance);
 };
 
 template <typename T>

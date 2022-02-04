@@ -14,35 +14,39 @@
 
 #include <algorithm>
 
-#include "idiclient.h"
+#include "idiclientinjector.h"
+#include "idiclientprovider.h"
 
 namespace adif {
 namespace internal {
 
 DependencyProvider DependencyProvider::dependencyProvider;
 
-void DependencyProvider::clear() { instances.clear(); }
-
 void DependencyProvider::clearFrameWork() {
-  DependencyProvider::dependencyProvider.clear();
-  DependencyProvider::clientList.clear();
+  instances.clear();
+  providersList.clear();
+  injectorsList.clear();
 }
 
-void DependencyProvider::addClient(IDIClient* const client) {
-  clientList.push_back(client);
+void DependencyProvider::addClient(IDIClientProvider* const client) {
+  providersList.push_back(client);
+}
+
+void DependencyProvider::addClient(IDIClientInjector* const client) {
+  injectorsList.push_back(client);
 }
 
 void DependencyProvider::initilizeAndShutDown() {
-  std::for_each(clientList.rbegin(), clientList.rend(), [](const auto& client) {
+  std::for_each(providersList.rbegin(), providersList.rend(), [](const auto& client) {
     client->provideDependencies(dependencyProvider);
   });
 
-  std::for_each(clientList.rbegin(), clientList.rend(), [](const auto& client) {
+  std::for_each(injectorsList.rbegin(), injectorsList.rend(), [](const auto& client) {
     client->getDependencies(dependencyProvider);
   });
 
 #ifdef DEPENDECY_CHECK
-  std::for_each(clientList.rbegin(), clientList.rend(), [](const auto& client) {
+  std::for_each(injectorsList.rbegin(), injectorsList.rend(), [](const auto& client) {
     client->checkDependenciesInitilized();
   });
 #endif

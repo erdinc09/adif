@@ -21,8 +21,10 @@ add_definitions(-DDEPENDECY_CHECK)
 
 add_library(adif
     STATIC
-    di/idiclient.h
-    di/idiclient.cpp
+    di/idiclientprovider.h
+    di/idiclientprovider.cpp
+    di/idiclientinjector.h
+    di/idiclientinjector.cpp
     di/dependencyprovider_impl.cpp
     di/dependencyprovider_impl.h
     di/dependencyprovider.h

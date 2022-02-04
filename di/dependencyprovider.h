@@ -17,12 +17,20 @@
 #include <string>
 
 #include "dependencyprovider_impl.h"
-#include "idiclient.h"
+#include "idiclientprovider.h"
+#include "idiclientinjector.h"
 
 namespace adif {
 
 inline void initilizeAndShutDown() {
-  internal::DependencyProvider::initilizeAndShutDown();
+  internal::DependencyProvider::dependencyProvider.initilizeAndShutDown();
+}
+
+template <typename T>
+void provideInstance(const T& instance) {
+  //  internal::DependencyProvider::dependencyProvider.provideDependency<T>(
+  //      &instance);
+  // internal::DependencyProvider::dependencyProvider.addClient()
 }
 
 template <typename...>
@@ -42,46 +50,34 @@ class Provides {  // no final class and no private default constructor in order
 };
 
 template <typename T>
-class Provides<T> : public T, internal::IDIClient {
+class Provides<T> : public T, internal::IDIClientProvider {
   void provideDependencies(
       internal::DependencyProvider& depencyProvider) final override {
     depencyProvider.provideDependency<T>(this);
   }
-
-  void getDependencies(internal::DependencyProvider&) final override{};
-
-  void checkDependenciesInitilized() override{};
 };
 
 template <typename T, typename U>
-class Provides<T, U> : public T, U, internal::IDIClient {
+class Provides<T, U> : public T, U, internal::IDIClientProvider {
   void provideDependencies(
       internal::DependencyProvider& depencyProvider) final override {
     depencyProvider.provideDependency<T>(this);
     depencyProvider.provideDependency<U>(this);
   }
-
-  void getDependencies(internal::DependencyProvider&) final override{};
-
-  void checkDependenciesInitilized() override{};
 };
 
 template <typename T, typename U, typename X>
-class Provides<T, U, X> : public T, public U, public X, internal::IDIClient {
+class Provides<T, U, X> : public T, public U, public X, internal::IDIClientProvider {
   void provideDependencies(
       internal::DependencyProvider& dependencyProvider) final override {
     dependencyProvider.provideDependency<T>(this);
     dependencyProvider.provideDependency<U>(this);
     dependencyProvider.provideDependency<X>(this);
   }
-
-  void getDependencies(internal::DependencyProvider&) final override{};
-
-  void checkDependenciesInitilized() override{};
 };
 
 template <typename T>
-class Injects final : public internal::IDIClient {
+class Injects final : public internal::IDIClientInjector {
  private:
   T* dependency{nullptr};
 
@@ -89,8 +85,6 @@ class Injects final : public internal::IDIClient {
       internal::DependencyProvider& dependencyProvider) override {
     dependency = dependencyProvider.getDependency<T>();
   }
-
-  void provideDependencies(internal::DependencyProvider&) override {}
 
 #ifdef DEPENDECY_CHECK
   void checkDependenciesInitilized() override {
@@ -102,7 +96,7 @@ class Injects final : public internal::IDIClient {
           .append(fileName)
           .append(":")
           .append(std::to_string(lineNumber));
-      internal::DependencyProvider::clearFrameWork();
+      internal::DependencyProvider::dependencyProvider.clearFrameWork();
       throw std::runtime_error(msg);
     }
   };
@@ -126,7 +120,7 @@ class Injects final : public internal::IDIClient {
   T* operator->() const {
 #ifdef DEPENDECY_CHECK
     if (dependency == nullptr) {
-      internal::DependencyProvider::clearFrameWork();
+      internal::DependencyProvider::dependencyProvider.clearFrameWork();
       std::string msg(
           "adif is not initilized, did you miss to call  "
           "\"adif::initilizeAndShutDown()\" ?");
@@ -138,7 +132,7 @@ class Injects final : public internal::IDIClient {
   operator T*() const {
 #ifdef DEPENDECY_CHECK
     if (dependency == nullptr) {
-      internal::DependencyProvider::clearFrameWork();
+      internal::DependencyProvider::dependencyProvider.clearFrameWork();
       std::string msg(
           "adif is not initilized, did you miss to call  "
           "\"adif::initilizeAndShutDown()\" ?");

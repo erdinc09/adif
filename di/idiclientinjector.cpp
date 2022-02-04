@@ -10,9 +10,11 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.
  */
 
-#include "idiclient.h"
+#include "idiclientinjector.h"
 namespace adif {
 namespace internal {
-IDIClient::IDIClient() { DependencyProvider::addClient(this); }
+IDIClientInjector::IDIClientInjector() { 
+    DependencyProvider::dependencyProvider.addClient(this);
+ }
 }  // namespace internal
 }  // namespace adif

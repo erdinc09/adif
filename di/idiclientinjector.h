@@ -10,8 +10,8 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.
  */
 
-#ifndef IDICLIENT_H
-#define IDICLIENT_H
+#ifndef IDICLIENTINJECTOR_H
+#define IDICLIENTINJECTOR_H
 #include "dependencyprovider_impl.h"
 namespace adif {
 
@@ -24,10 +24,14 @@ class Provides;
 
 namespace internal {
 
-class IDIClient {
+class IDIClientInjector {
+  IDIClientInjector(const IDIClientInjector& client) = delete;
+  IDIClientInjector(IDIClientInjector&& client) = delete;
+  IDIClientInjector& operator=(const IDIClientInjector& client) = delete;
+  IDIClientInjector& operator=(IDIClientInjector&& client) = delete;
+
  private:
-  IDIClient();
-  virtual void provideDependencies(DependencyProvider& depencyProvider) = 0;
+  IDIClientInjector();
   virtual void getDependencies(DependencyProvider& depencyProvider) = 0;
   virtual void checkDependenciesInitilized() = 0;
 
@@ -36,11 +40,8 @@ class IDIClient {
 
   template <typename T>
   friend class ::adif::Injects;
-
-  template <typename... types>
-  friend class ::adif::Provides;
 };
 }  // namespace internal
 }  // namespace adif
 
-#endif  // IDICLIENT_H
+#endif  // IDICLIENTINJECTOR_H
