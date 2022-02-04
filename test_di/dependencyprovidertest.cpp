@@ -1,5 +1,3 @@
-#include <gmock/gmock.h>
-#include <gtest/gtest.h>
 /*
  * Copyright (c) 2020-2021 Ahmet Erdinç Yılmaz -- <ahmeterdinc09@gmail.com>
  *
@@ -11,6 +9,8 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.
  */
+#include <gmock/gmock.h>
+#include <gtest/gtest.h>
 
 #include <string>
 
@@ -71,7 +71,7 @@ class Class2 : Provides(Interface2to1) {
 };
 using ::testing::Exactly;
 
-TEST(SimpleTests, ShouldCallCallMeDirectly) {
+TEST(DependencyProvider, ShouldCallCallMeDirectly) {
   MockIControl mockKontrol{};
   EXPECT_CALL(mockKontrol, callMe()).Times(Exactly(1));
 
@@ -83,7 +83,7 @@ TEST(SimpleTests, ShouldCallCallMeDirectly) {
   class1.foo();
 }
 
-TEST(SimpleTests, ShouldCallCallMeThroughPointer) {
+TEST(DependencyProvider, ShouldCallCallMeThroughPointer) {
   MockIControl mockKontrol{};
   EXPECT_CALL(mockKontrol, callMe()).Times(Exactly(1));
 
@@ -95,7 +95,7 @@ TEST(SimpleTests, ShouldCallCallMeThroughPointer) {
   class1.boo();
 }
 
-TEST(SimpleTests, ShouldCallCallMeDirectlyInBothDependencies) {
+TEST(DependencyProvider, ShouldCallCallMeDirectlyInBothDependencies) {
   MockIControl mockKontrol1{};
   MockIControl mockKontrol2{};
   EXPECT_CALL(mockKontrol1, callMe()).Times(Exactly(1));
@@ -111,7 +111,8 @@ TEST(SimpleTests, ShouldCallCallMeDirectlyInBothDependencies) {
 }
 
 #ifdef DEPENDECY_CHECK
-TEST(SimpleTests, ShouldThrowExceptionWhenInitilizeAndShutDownNotCalled) {
+TEST(DependencyProvider,
+     ShouldThrowExceptionWhenInitilizeAndShutDownNotCalled) {
   StubIControl stubIControl{};
 
   Class1 class1{stubIControl};
@@ -134,7 +135,7 @@ TEST(SimpleTests, ShouldThrowExceptionWhenInitilizeAndShutDownNotCalled) {
 #endif
 
 #ifdef DEPENDECY_CHECK
-TEST(SimpleTests, ShouldThrowExceptionWhenDependencyNotFound) {
+TEST(DependencyProvider, ShouldThrowExceptionWhenDependencyNotFound) {
   StubIControl stubIControl{};
 
   Class1 class1{stubIControl};
@@ -143,7 +144,7 @@ TEST(SimpleTests, ShouldThrowExceptionWhenDependencyNotFound) {
 }
 #endif
 
-TEST(SimpleTests,
+TEST(DependencyProvider,
      ShouldThrowExceptionWhenSameInterfaceRegisteredMoreThanOneTime) {
   StubIControl stubIControl{};
 

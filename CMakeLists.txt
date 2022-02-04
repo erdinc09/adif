@@ -26,7 +26,16 @@ add_library(adif
     di/dependencyprovider_impl.cpp
     di/dependencyprovider_impl.h
     di/dependencyprovider.h
+
+    ds/datastore.h
     )
+
+#add_library(ds
+#    STATIC
+#    ds/datastore.h
+#    )
+#set_target_properties(do PROPERTIES LINKER_LANGUAGE CXX)
+#target_include_directories(do PRIVATE "di")
 
 #example
 add_executable(adif_example
@@ -34,15 +43,28 @@ add_executable(adif_example
 target_include_directories(adif_example PRIVATE "di")
 target_link_libraries(adif_example adif)
 
-#tests
+#tests di
 if(NOT CMAKE_SYSTEM_NAME STREQUAL "Windows") # disable for now, there is a linker problem...
-    file(GLOB TEST_SRC_FILES "${CMAKE_CURRENT_SOURCE_DIR}/test/*.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/test/*.h")
-    add_executable(adif_test ${TEST_SRC_FILES})
-    target_include_directories(adif_test PRIVATE "di")
-    target_link_libraries(adif_test GTest::gtest)
-    target_link_libraries(adif_test GTest::gmock)
-    target_link_libraries(adif_test adif)
+    file(GLOB TEST_DI_SRC_FILES "${CMAKE_CURRENT_SOURCE_DIR}/test_di/*.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/test_di/*.h")
+    add_executable(di_test ${TEST_DI_SRC_FILES})
+    target_include_directories(di_test PRIVATE "di")
+    target_link_libraries(di_test GTest::gtest)
+    target_link_libraries(di_test GTest::gmock)
+    target_link_libraries(di_test adif)
 
     enable_testing()
-    add_test(NAME adif_test COMMAND adif_test)
+    add_test(NAME di_test COMMAND di_test)
+endif()
+
+#tests do
+if(NOT CMAKE_SYSTEM_NAME STREQUAL "Windows") # disable for now, there is a linker problem...
+    file(GLOB TEST_DO_SRC_FILES "${CMAKE_CURRENT_SOURCE_DIR}/test_ds/*.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/test_ds/*.h")
+    add_executable(ds_test ${TEST_DO_SRC_FILES})
+    target_include_directories(ds_test PRIVATE "ds")
+    target_link_libraries(ds_test GTest::gtest)
+    target_link_libraries(ds_test GTest::gmock)
+    target_link_libraries(ds_test adif)
+
+    enable_testing()
+    add_test(NAME ds_test COMMAND ds_test)
 endif()
