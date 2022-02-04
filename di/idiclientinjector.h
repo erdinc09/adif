@@ -14,16 +14,7 @@
 #define IDICLIENTINJECTOR_H
 #include "dependencyprovider_impl.h"
 namespace adif {
-
-/*forward declerations for friends*/
-template <typename T>
-class Injects;
-
-template <typename... types>
-class Provides;
-
 namespace internal {
-
 class IDIClientInjector {
   IDIClientInjector(const IDIClientInjector& client) = delete;
   IDIClientInjector(IDIClientInjector&& client) = delete;

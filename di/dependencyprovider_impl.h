@@ -31,13 +31,13 @@ class Injects;
 template <typename...>
 class Provides;
 
-void initilizeAndShutDown();
 template <typename T>
-void provideInstance(const T& instance);
+class ProvidesInstance;
+
+void initilizeAndShutDown();
 
 namespace internal {
 
-//class IDIClient;
 class IDIClientProvider;
 class IDIClientInjector;
 
@@ -74,10 +74,10 @@ class DependencyProvider final {
   template <typename...>
   friend class ::adif::Provides;
 
-  friend void ::adif::initilizeAndShutDown();
-
   template <typename T>
-  friend void ::adif::provideInstance(const T& instance);
+  friend class ::adif::ProvidesInstance;
+
+  friend void ::adif::initilizeAndShutDown();
 };
 
 template <typename T>
@@ -86,8 +86,9 @@ void DependencyProvider::provideDependency(T* instance) {
            .emplace(std::type_index(typeid(T)), instance)
            .second) {
     clearFrameWork();
+
     throw std::invalid_argument(
-        std::string(typeid(T).name())
+        std::string(std::type_index(typeid(T)).name())
             .append(" = (typeid(<interface type>).name()) is alredy registered "
                     "before"));
   }

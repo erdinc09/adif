@@ -31,14 +31,14 @@ class MockIControl : public IControl {
 };
 
 TEST(DataStore, getShouldReturnLastSetValue) {
-  DataStore<std::string> dataObserver;
+  DataStore<std::string> dataStore;
 
-  dataObserver.setData("string1");
-  ASSERT_EQ(dataObserver.getData(), "string1");
+  dataStore.setData("string1");
+  ASSERT_EQ(dataStore.getData(), "string1");
 
   std::string val2{"string2"};
-  dataObserver.setData(val2);
-  ASSERT_EQ(dataObserver.getData(), "string2");
+  dataStore.setData(val2);
+  ASSERT_EQ(dataStore.getData(), "string2");
 }
 
 TEST(DataStore, getShouldReturnEmptyObject) {
@@ -48,10 +48,10 @@ TEST(DataStore, getShouldReturnEmptyObject) {
 }
 
 TEST(DataStore, setShouldCallMoveOverload) {
-  DataStore<std::string> dataObserver;
+  DataStore<std::string> dataStore;
 
   std::string val{"string"};
-  dataObserver.setData(std::move(val));
+  dataStore.setData(std::move(val));
 
   ASSERT_EQ(val, "");
 }
@@ -73,9 +73,9 @@ TEST(DataStore, setShouldNoCallCopyConstructor) {
     A(const MockIControl* mockControl_) : mockControl{mockControl_} {}
   };
 
-  DataStore<A> dataObserver;
+  DataStore<A> dataStore;
 
-  dataObserver.setData(A{&mockControl});
+  dataStore.setData(A{&mockControl});
 }
 
 TEST(DataStore, setShouldCallCopyConstructor) {
@@ -94,10 +94,10 @@ TEST(DataStore, setShouldCallCopyConstructor) {
     A(const MockIControl* mockControl_) : mockControl{mockControl_} {}
   };
 
-  DataStore<A> dataObserver;
+  DataStore<A> dataStore;
 
   const A a{&mockControl};
-  dataObserver.setData(a);
+  dataStore.setData(a);
 }
 
 TEST(DataStore, setShouldCallObservers) {
@@ -105,17 +105,17 @@ TEST(DataStore, setShouldCallObservers) {
   EXPECT_CALL(mockControl, call1()).Times(Exactly(1));
   EXPECT_CALL(mockControl, call2()).Times(Exactly(1));
 
-  DataStore<std::string> dataObserver;
+  DataStore<std::string> dataStore;
 
-  dataObserver.addObserver([&](auto oldValue, auto newValue) -> void {
+  dataStore.addObserver([&](auto oldValue, auto newValue) -> void {
     mockControl.call1();
     ASSERT_EQ(oldValue, "");
     ASSERT_EQ(newValue, "string");
   });
-  dataObserver.addObserver([&](auto oldValue, auto newValue) -> void {
+  dataStore.addObserver([&](auto oldValue, auto newValue) -> void {
     mockControl.call2();
     ASSERT_EQ(oldValue, "");
     ASSERT_EQ(newValue, "string");
   });
-  dataObserver.setData("string");
+  dataStore.setData("string");
 }

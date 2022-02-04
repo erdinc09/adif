@@ -26,13 +26,6 @@ inline void initilizeAndShutDown() {
   internal::DependencyProvider::dependencyProvider.initilizeAndShutDown();
 }
 
-template <typename T>
-void provideInstance(const T& instance) {
-  //  internal::DependencyProvider::dependencyProvider.provideDependency<T>(
-  //      &instance);
-  // internal::DependencyProvider::dependencyProvider.addClient()
-}
-
 template <typename...>
 constexpr auto make_false() {
   return false;
@@ -67,12 +60,26 @@ class Provides<T, U> : public T, U, internal::IDIClientProvider {
 };
 
 template <typename T, typename U, typename X>
-class Provides<T, U, X> : public T, public U, public X, internal::IDIClientProvider {
+class Provides<T, U, X>
+    : public T, public U, public X, internal::IDIClientProvider {
   void provideDependencies(
       internal::DependencyProvider& dependencyProvider) final override {
     dependencyProvider.provideDependency<T>(this);
     dependencyProvider.provideDependency<U>(this);
     dependencyProvider.provideDependency<X>(this);
+  }
+};
+
+template <typename T>
+class ProvidesInstance final : public internal::IDIClientProvider {
+ public:
+  ProvidesInstance(T* instance_) : instance{instance_} {}
+
+ private:
+  T* instance;
+  void provideDependencies(
+      internal::DependencyProvider& depencyProvider) override {
+    depencyProvider.provideDependency<T>(instance);
   }
 };
 
@@ -142,6 +149,12 @@ class Injects final : public internal::IDIClientInjector {
     return dependency;
   }
 };
+
+/*
+ * @instance the instance that is to be registered for injection
+ */
+#define ProvidesInstance(instance) \
+  adif::ProvidesInstance { &instance }
 
 /*
  * @... the interfaces that the class provides.

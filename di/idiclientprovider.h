@@ -14,14 +14,6 @@
 #define IDICLIENTPROVIDER_H
 #include "dependencyprovider_impl.h"
 namespace adif {
-
-/*forward declerations for friends*/
-template <typename T>
-class Injects;
-
-template <typename... types>
-class Provides;
-
 namespace internal {
 
 class IDIClientProvider {
@@ -39,6 +31,9 @@ class IDIClientProvider {
 
   template <typename... types>
   friend class ::adif::Provides;
+
+  template <typename T>
+  friend class ::adif::ProvidesInstance;
 };
 }  // namespace internal
 }  // namespace adif

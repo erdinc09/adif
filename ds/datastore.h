@@ -16,9 +16,9 @@ class DataStore final {
                 "DataStore<T> requires T to be a non pointer type");
 
  private:
-  std::unique_ptr<const T> data;
-  std::mutex dataMutex;
-  std::vector<T_Observer> observers;
+  std::unique_ptr<const T> data{};
+  std::mutex dataMutex{};
+  std::vector<T_Observer> observers{};
 
  public:
   DataStore() : data{std::make_unique<T>()} {}
@@ -43,8 +43,7 @@ class DataStore final {
     });
   }
 
-  // TODO: test constrcutors in cpp lab
-  void addObserver(T_Observer observer) {
+  void addObserver(const T_Observer& observer) {
     std::lock_guard<std::mutex> guard{dataMutex};
     observers.push_back(observer);
   }
