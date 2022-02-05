@@ -16,7 +16,7 @@ endif()
 set(CMAKE_CXX_STANDARD 17)
 
 hunter_add_package(GTest)
-find_package(GTest CONFIG REQUIRED)
+find_package(GTest 1.11.0 CONFIG REQUIRED)
 
 add_definitions(-DDEPENDECY_CHECK)
 

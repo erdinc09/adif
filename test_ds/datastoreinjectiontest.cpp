@@ -53,7 +53,6 @@ class Class1 : Provides(Interface1to2) {
 
  private:
   Injects(Interface2to1, interface2to1);
-  // Injects(ProviderDataStore<int>, intDs);
   Injects(ReadOnlyDataStore<int>, intDs);
   IControl& control;
 };

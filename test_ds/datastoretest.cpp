@@ -14,6 +14,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include <iostream>
 #include <string>
 
 class IControl {
@@ -21,6 +22,8 @@ class IControl {
   virtual void call1() const = 0;
   virtual void call2() const = 0;
   virtual void call3() const = 0;
+
+  virtual ~IControl() {}
 };
 
 class MockIControl : public IControl {
@@ -58,7 +61,8 @@ TEST(DataStore, setShouldCallMoveOverload) {
 using ::testing::Exactly;
 
 TEST(DataStore, setShouldNotCallCopyConstructor) {
-  MockIControl mockControl{};
+  MockIControl mockControl{};  // when defined here crashes in debug mode, both
+                               // clang and gcc
   EXPECT_CALL(mockControl, call1()).Times(Exactly(0));
   EXPECT_CALL(mockControl, call2()).Times(Exactly(1));
 
@@ -79,7 +83,8 @@ TEST(DataStore, setShouldNotCallCopyConstructor) {
 }
 
 TEST(DataStore, setShouldCallCopyConstructor) {
-  MockIControl mockControl{};
+  MockIControl mockControl{};  // when defined here crashes in debug mode, both
+                               // clang and gcc
   EXPECT_CALL(mockControl, call1()).Times(Exactly(1));
   EXPECT_CALL(mockControl, call2()).Times(Exactly(0));
 
@@ -101,17 +106,19 @@ TEST(DataStore, setShouldCallCopyConstructor) {
 }
 
 TEST(DataStore, setShouldCallObservers) {
-  MockIControl mockControl{};
+  MockIControl mockControl{};  // when defined here crashes in debug mode, both
+                               // clang and gcc
   EXPECT_CALL(mockControl, call1()).Times(Exactly(1));
   EXPECT_CALL(mockControl, call2()).Times(Exactly(1));
 
   DataStore<std::string> dataStore{};
 
-  dataStore.addObserver([&](std::string oldValue, std::string newValue) -> void{
-    mockControl.call1();
-    ASSERT_EQ(oldValue, "");
-    ASSERT_EQ(newValue, "string");
-  });
+  dataStore.addObserver(
+      [&](std::string oldValue, std::string newValue) -> void {
+        mockControl.call1();
+        ASSERT_EQ(oldValue, "");
+        ASSERT_EQ(newValue, "string");
+      });
 
   dataStore.addObserver([&](auto oldValue, auto newValue) -> void {
     mockControl.call2();
