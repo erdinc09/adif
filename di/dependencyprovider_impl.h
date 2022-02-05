@@ -22,6 +22,9 @@
 #include <unordered_map>
 #include <vector>
 
+template <typename T>
+class ProviderDataStore;
+
 namespace adif {
 
 /*forward declarations for friends*/
@@ -76,6 +79,9 @@ class DependencyProvider final {
 
   template <typename T>
   friend class ::adif::ProvidesInstance;
+
+  template <typename T>
+  friend class ::ProviderDataStore;
 
   friend void ::adif::initilizeAndShutDown();
 };

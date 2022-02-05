@@ -13,49 +13,58 @@
 #include <iostream>
 
 #include "dependencyprovider.h"
+#include "datastore.h"
 
-class Interface1to2 {
- public:
+class Interface1to2
+{
+public:
   virtual void callInterface1to2() = 0;
 };
 
-class Interface2to1 {
- public:
+class Interface2to1
+{
+public:
   virtual void callInterface2to1() = 0;
 };
 
-class Class1 : Provides(Interface1to2) {
-  void callInterface1to2() override {
+class Class1 : Provides(Interface1to2)
+{
+  void callInterface1to2() override
+  {
     std::cout << "called: void callInterface1to2() " << std::endl;
   }
 
- public:
+public:
   void foo() { interface2to1->callInterface2to1(); }
 
- private:
+private:
   Injects(Interface2to1, interface2to1);
 };
 
-class Class2 : Provides(Interface2to1) {
- public:
-  void callInterface2to1() override {
+class Class2 : Provides(Interface2to1)
+{
+public:
+  void callInterface2to1() override
+  {
     std::cout << "called: void callInterface2to1()" << std::endl;
   }
 
- public:
-  void foo() {
+public:
+  void foo()
+  {
     interface1to2->callInterface1to2();
 
     // cast is also ok
-    Interface1to2* ptr{interface1to2};
+    Interface1to2 *ptr{interface1to2};
     ptr->callInterface1to2();
   }
 
- private:
+private:
   Injects(Interface1to2, interface1to2);
 };
 
-int main() {
+int main()
+{
   Class1 class1{};
   Class2 class2{};
 
@@ -64,4 +73,11 @@ int main() {
 
   class1.foo();
   class2.foo();
+
+  DataStore<std::string> dataStore{};
+
+  dataStore.addObserver([&](auto oldValue, auto newValue) -> void
+                        { std::cout << newValue << std::endl; });
+
+  dataStore.setData("333");
 }

@@ -31,7 +31,7 @@ class MockIControl : public IControl {
 };
 
 TEST(DataStore, getShouldReturnLastSetValue) {
-  DataStore<std::string> dataStore;
+  DataStore<std::string> dataStore{};
 
   dataStore.setData("string1");
   ASSERT_EQ(dataStore.getData(), "string1");
@@ -48,7 +48,7 @@ TEST(DataStore, getShouldReturnEmptyObject) {
 }
 
 TEST(DataStore, setShouldCallMoveOverload) {
-  DataStore<std::string> dataStore;
+  DataStore<std::string> dataStore{};
 
   std::string val{"string"};
   dataStore.setData(std::move(val));
@@ -57,14 +57,14 @@ TEST(DataStore, setShouldCallMoveOverload) {
 }
 using ::testing::Exactly;
 
-TEST(DataStore, setShouldNoCallCopyConstructor) {
+TEST(DataStore, setShouldNotCallCopyConstructor) {
   MockIControl mockControl{};
   EXPECT_CALL(mockControl, call1()).Times(Exactly(0));
   EXPECT_CALL(mockControl, call2()).Times(Exactly(1));
 
   class A {
    private:
-    const MockIControl* const mockControl;
+    const MockIControl* mockControl;
 
    public:
     A() : mockControl{nullptr} {};
@@ -73,7 +73,7 @@ TEST(DataStore, setShouldNoCallCopyConstructor) {
     A(const MockIControl* mockControl_) : mockControl{mockControl_} {}
   };
 
-  DataStore<A> dataStore;
+  DataStore<A> dataStore{};
 
   dataStore.setData(A{&mockControl});
 }
@@ -94,7 +94,7 @@ TEST(DataStore, setShouldCallCopyConstructor) {
     A(const MockIControl* mockControl_) : mockControl{mockControl_} {}
   };
 
-  DataStore<A> dataStore;
+  DataStore<A> dataStore{};
 
   const A a{&mockControl};
   dataStore.setData(a);
@@ -105,13 +105,14 @@ TEST(DataStore, setShouldCallObservers) {
   EXPECT_CALL(mockControl, call1()).Times(Exactly(1));
   EXPECT_CALL(mockControl, call2()).Times(Exactly(1));
 
-  DataStore<std::string> dataStore;
+  DataStore<std::string> dataStore{};
 
-  dataStore.addObserver([&](auto oldValue, auto newValue) -> void {
+  dataStore.addObserver([&](std::string oldValue, std::string newValue) -> void{
     mockControl.call1();
     ASSERT_EQ(oldValue, "");
     ASSERT_EQ(newValue, "string");
   });
+
   dataStore.addObserver([&](auto oldValue, auto newValue) -> void {
     mockControl.call2();
     ASSERT_EQ(oldValue, "");

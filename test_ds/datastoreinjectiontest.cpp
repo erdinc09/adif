@@ -17,6 +17,7 @@
 
 #include "datastore.h"
 #include "dependencyprovider.h"
+#include "providerdatastore.h"
 
 class Interface1to2 {
  public:
@@ -42,7 +43,6 @@ class Class1 : Provides(Interface1to2) {
   void callInterface1to2() override {}
   void foo() {
     interface2to1->callInterface2to1();
-
     intDs->addObserver([&](int oldValue, int newValue) {
       control.call2();
       ASSERT_EQ(oldValue, 0);
@@ -53,7 +53,8 @@ class Class1 : Provides(Interface1to2) {
 
  private:
   Injects(Interface2to1, interface2to1);
-  Injects(DataStore<int>, intDs);
+  // Injects(ProviderDataStore<int>, intDs);
+  Injects(ReadOnlyDataStore<int>, intDs);
   IControl& control;
 };
 
@@ -107,7 +108,7 @@ using ::testing::Exactly;
 
 TEST(DataStoreInjection, dataStoresShouldBeInjected) {
   DataStore<std::string> stringDs{};
-  DataStore<int> intDs{};
+  ProviderDataStore<int> intDs{"name1"};
 
   MockIControl mockKontrol{};
   EXPECT_CALL(mockKontrol, call1()).Times(Exactly(1));
@@ -119,9 +120,7 @@ TEST(DataStoreInjection, dataStoresShouldBeInjected) {
   Class2 class2{mockKontrol};
   Class3 class3{mockKontrol};
 
-  ProvidesInstance(stringDs);
-  ProvidesInstance(intDs);
-
+  ProvidesInstance(stringDs, name1);
   adif::initilizeAndShutDown();
 
   class1.foo();

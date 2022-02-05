@@ -2,8 +2,10 @@ cmake_minimum_required(VERSION 3.12)
 
 # Use hunter to download and build some third party dependencies
 include("external/cmake/HunterGate.cmake")
-huntergate(URL "https://github.com/cpp-pm/hunter/archive/v0.23.279.tar.gz" SHA1
-           "0a8ede485c3e9c1ceed8ccb989ab6c0aba1f4db7")
+HunterGate(
+    URL "https://github.com/cpp-pm/hunter/archive/v0.23.321.tar.gz"
+    SHA1 "5e53cbb0429037ea8e2592bfd92704b8ff3ab492"
+)
 
 project(adif)
 
@@ -27,14 +29,17 @@ add_library(
   di/dependencyprovider_impl.cpp
   di/dependencyprovider_impl.h
   di/dependencyprovider.h
-  ds/datastore.h)
+  ds/datastore.h
+  ds/providerdatastore.h)
+
+target_include_directories(adif PUBLIC "di") # for datastore
 
 # add_library(ds STATIC ds/datastore.h ) set_target_properties(do PROPERTIES
 # LINKER_LANGUAGE CXX) target_include_directories(do PRIVATE "di")
 
 # example
 add_executable(adif_example example/example.cpp)
-target_include_directories(adif_example PRIVATE "di")
+target_include_directories(adif_example PRIVATE "di" "ds")
 target_link_libraries(adif_example adif)
 
 # tests di
@@ -52,7 +57,7 @@ if(NOT CMAKE_SYSTEM_NAME STREQUAL "Windows") # disable for now, there is a
   add_test(NAME di_test COMMAND di_test)
 endif()
 
-# tests do
+# tests ds
 if(NOT CMAKE_SYSTEM_NAME STREQUAL "Windows") # disable for now, there is a
                                              # linker problem...
   file(GLOB TEST_DO_SRC_FILES "${CMAKE_CURRENT_SOURCE_DIR}/test_ds/*.cpp"

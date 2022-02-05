@@ -13,6 +13,10 @@
 #ifndef IDICLIENTPROVIDER_H
 #define IDICLIENTPROVIDER_H
 #include "dependencyprovider_impl.h"
+
+template <typename T>
+class ProviderDataStore;
+
 namespace adif {
 namespace internal {
 
@@ -34,6 +38,9 @@ class IDIClientProvider {
 
   template <typename T>
   friend class ::adif::ProvidesInstance;
+
+  template <typename T>
+  friend class ::ProviderDataStore;
 };
 }  // namespace internal
 }  // namespace adif
