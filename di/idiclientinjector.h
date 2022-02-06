@@ -16,6 +16,7 @@
 namespace adif {
 namespace internal {
 class IDIClientInjector {
+ public:
   IDIClientInjector(const IDIClientInjector& client) = delete;
   IDIClientInjector(IDIClientInjector&& client) = delete;
   IDIClientInjector& operator=(const IDIClientInjector& client) = delete;

@@ -12,7 +12,7 @@ template <typename T>
 using T_Observer = std::function<void(const T& oldData, const T& newData)>;
 
 template <typename T>
-class DataStore /*final*/ {
+class DataStore {
   static_assert(!std::is_pointer_v<T>,
                 "DataStore<T> requires T to be a non pointer type");
 

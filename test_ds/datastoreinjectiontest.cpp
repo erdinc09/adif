@@ -19,6 +19,11 @@
 #include "dependencyprovider.h"
 #include "providerdatastore.h"
 
+// template generations by "DECLARE_DATA_STORE_SUB_CLASS" macro
+DECLARE_DATA_STORE_SUB_CLASS(ProviderDataStore);
+DECLARE_DATA_STORE_SUB_CLASS(ProviderDataStore1);
+DECLARE_DATA_STORE_SUB_CLASS(ProviderDataStore2);
+
 class Interface1to2 {
  public:
   virtual void callInterface1to2() = 0;
@@ -53,7 +58,7 @@ class Class1 : Provides(Interface1to2) {
 
  private:
   Injects(Interface2to1, interface2to1);
-  Injects(ReadOnlyDataStore<int>, intDs);
+  Injects(ProviderDataStoreReadOnlyDataStore<int>, intDs);
   IControl& control;
 };
 
@@ -67,6 +72,21 @@ class Class2 : Provides(Interface2to1) {
       ASSERT_EQ(oldValue, "");
       ASSERT_EQ(newValue, "string");
     });
+    intDs->addObserver([&](auto oldValue, auto newValue) {
+      control.call3();
+      ASSERT_EQ(oldValue, 0);
+      ASSERT_EQ(newValue, 1);
+    });
+    intDs1->addObserver([&](auto oldValue, auto newValue) {
+      control.call3();
+      ASSERT_EQ(oldValue, 0);
+      ASSERT_EQ(newValue, 2);
+    });
+    intDs2->addObserver([&](auto oldValue, auto newValue) {
+      control.call3();
+      ASSERT_EQ(oldValue, 0);
+      ASSERT_EQ(newValue, 3);
+    });
   }
 
  public:
@@ -75,6 +95,9 @@ class Class2 : Provides(Interface2to1) {
  private:
   Injects(Interface1to2, interface1to2);
   Injects(DataStore<std::string>, stringDs);
+  Injects(ProviderDataStore<int>, intDs);
+  Injects(ProviderDataStore1<int>, intDs1);
+  Injects(ProviderDataStore2<int>, intDs2);
   IControl& control;
 };
 
@@ -107,24 +130,29 @@ using ::testing::Exactly;
 
 TEST(DataStoreInjection, dataStoresShouldBeInjected) {
   DataStore<std::string> stringDs{};
-  ProviderDataStore<int> intDs{"name1"};
+  ProviderDataStore<int> intDs{};
+  ProviderDataStore1<int> intDs1{};
+  ProviderDataStore2<int> intDs2{};
 
   MockIControl mockKontrol{};
   EXPECT_CALL(mockKontrol, call1()).Times(Exactly(1));
   EXPECT_CALL(mockKontrol, call2()).Times(Exactly(1));
-  EXPECT_CALL(mockKontrol, call3()).Times(Exactly(1));
+  EXPECT_CALL(mockKontrol, call3()).Times(Exactly(4));
   EXPECT_CALL(mockKontrol, call4()).Times(Exactly(1));
 
   Class1 class1{mockKontrol};
   Class2 class2{mockKontrol};
   Class3 class3{mockKontrol};
 
-  ProvidesInstance(stringDs, name1);
+  ProvidesInstance(stringDs);
   adif::initilizeAndShutDown();
 
   class1.foo();
   class3.foo();
 
   intDs.setData(1);
+  intDs1.setData(2);
+  intDs2.setData(3);
+
   stringDs.setData("string");
 }

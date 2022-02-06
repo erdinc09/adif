@@ -39,18 +39,22 @@ class ProvidesInstance;
 
 void initilizeAndShutDown();
 
+// template <typename T>
+// void provideDependency(T* instance);
+
 namespace internal {
 
 class IDIClientProvider;
 class IDIClientInjector;
 
 class DependencyProvider final {
+ public:
+  template <typename T>
+  void provideDependency(T* instance);
+
  private:
   DependencyProvider() = default;
   ~DependencyProvider() = default;
-
-  template <typename T>
-  void provideDependency(T* instance);
 
   template <typename T>
   T* getDependency();
@@ -79,9 +83,6 @@ class DependencyProvider final {
 
   template <typename T>
   friend class ::adif::ProvidesInstance;
-
-  template <typename T>
-  friend class ::ProviderDataStore;
 
   friend void ::adif::initilizeAndShutDown();
 };

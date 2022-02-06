@@ -14,20 +14,20 @@
 #define IDICLIENTPROVIDER_H
 #include "dependencyprovider_impl.h"
 
-template <typename T>
-class ProviderDataStore;
-
 namespace adif {
 namespace internal {
 
 class IDIClientProvider {
+ public:
   IDIClientProvider(const IDIClientProvider& client) = delete;
   IDIClientProvider(IDIClientProvider&& client) = delete;
   IDIClientProvider& operator=(const IDIClientProvider& client) = delete;
   IDIClientProvider& operator=(IDIClientProvider&& client) = delete;
 
- private:
+ protected:
   IDIClientProvider();
+
+ private:
   virtual void provideDependencies(DependencyProvider& depencyProvider) = 0;
 
   /*friends*/
@@ -38,9 +38,6 @@ class IDIClientProvider {
 
   template <typename T>
   friend class ::adif::ProvidesInstance;
-
-  template <typename T>
-  friend class ::ProviderDataStore;
 };
 }  // namespace internal
 }  // namespace adif

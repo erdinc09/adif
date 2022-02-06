@@ -73,8 +73,7 @@ class Provides<T, U, X>
 template <typename T>
 class ProvidesInstance final : public internal::IDIClientProvider {
  public:
-  ProvidesInstance(T* instance_, const std::string name)
-      : instance{instance_} {}
+  ProvidesInstance(T* instance_) : instance{instance_} {}
 
  private:
   T* instance;
@@ -152,10 +151,11 @@ class Injects final : public internal::IDIClientInjector {
 };
 
 /*
+ * NOT: deprecated, do not use
  * @instance the instance that is to be registered for injection
  */
-#define ProvidesInstance(instance, name) \
-  adif::ProvidesInstance instance##__{ &instance, #name }
+#define ProvidesInstance(instance) \
+  adif::ProvidesInstance instance##__ { &instance }
 
 /*
  * @... the interfaces that the class provides.
