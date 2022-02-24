@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+
 template <typename T>
 using T_Observer = std::function<void(const T& oldData, const T& newData)>;
 

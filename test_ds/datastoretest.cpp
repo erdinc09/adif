@@ -17,8 +17,9 @@
 #include <iostream>
 #include <string>
 
+
 class IControl {
- public:
+public:
   virtual void call1() const = 0;
   virtual void call2() const = 0;
   virtual void call3() const = 0;
@@ -26,12 +27,15 @@ class IControl {
   virtual ~IControl() {}
 };
 
-class MockIControl : public IControl {
- public:
-  MOCK_METHOD(void, call1, (), (override, const));
-  MOCK_METHOD(void, call2, (), (override, const));
-  MOCK_METHOD(void, call3, (), (override, const));
-};
+#define DEFINE_MOCK_ICONTROL() \
+  class MockIControl : public IControl {\
+  public:\
+  MOCK_METHOD(void, call1, (), (const, override));\
+  MOCK_METHOD(void, call2, (), (const, override));\
+  MOCK_METHOD(void, call3, (), (const, override));\
+  };
+
+using ::testing::Exactly;
 
 TEST(DataStore, getShouldReturnLastSetValue) {
   DataStore<std::string> dataStore{};
@@ -58,72 +62,80 @@ TEST(DataStore, setShouldCallMoveOverload) {
 
   ASSERT_EQ(val, "");
 }
-using ::testing::Exactly;
 
 TEST(DataStore, setShouldNotCallCopyConstructor) {
-  MockIControl mockControl{};  // when defined here crashes in debug mode, both
-                               // clang and gcc
+
+  //if mock definitions reside out of method, crashes in debug mode
+  DEFINE_MOCK_ICONTROL()
+
+  MockIControl mockControl{};
   EXPECT_CALL(mockControl, call1()).Times(Exactly(0));
   EXPECT_CALL(mockControl, call2()).Times(Exactly(1));
 
   class A {
-   private:
-    const MockIControl* mockControl;
+  private:
+    const IControl* mockControl;
 
-   public:
+  public:
     A() : mockControl{nullptr} {};
     A(const A& a) : mockControl{a.mockControl} { mockControl->call1(); }
     A(A&& a) : mockControl{a.mockControl} { mockControl->call2(); }
-    A(const MockIControl* mockControl_) : mockControl{mockControl_} {}
+    A(const IControl* mockControl_) : mockControl{mockControl_} {}
   };
 
-  DataStore<A> dataStore{};
 
+  DataStore<A> dataStore{};
   dataStore.setData(A{&mockControl});
 }
 
 TEST(DataStore, setShouldCallCopyConstructor) {
-  MockIControl mockControl{};  // when defined here crashes in debug mode, both
-                               // clang and gcc
+
+  //if mock definitions reside out of method, crashes in debug mode
+  DEFINE_MOCK_ICONTROL()
+
+  MockIControl mockControl{};
   EXPECT_CALL(mockControl, call1()).Times(Exactly(1));
   EXPECT_CALL(mockControl, call2()).Times(Exactly(0));
 
   class A {
-   private:
-    const MockIControl* const mockControl;
+  private:
+    const IControl* const mockControl;
 
-   public:
+  public:
     A() : mockControl{nullptr} {};
     A(const A& a) : mockControl{a.mockControl} { mockControl->call1(); }
     A(A&& a) : mockControl{a.mockControl} { mockControl->call2(); }
-    A(const MockIControl* mockControl_) : mockControl{mockControl_} {}
+    A(const IControl* mockControl_) : mockControl{mockControl_} {}
   };
 
   DataStore<A> dataStore{};
-
-  const A a{&mockControl};
+  A a{&mockControl};
   dataStore.setData(a);
 }
 
 TEST(DataStore, setShouldCallObservers) {
-  MockIControl mockControl{};  // when defined here crashes in debug mode, both
-                               // clang and gcc
+
+  //if mock definitions reside out of method, crashes in debug mode
+  DEFINE_MOCK_ICONTROL()
+
+  const MockIControl mockControl;
   EXPECT_CALL(mockControl, call1()).Times(Exactly(1));
+
   EXPECT_CALL(mockControl, call2()).Times(Exactly(1));
 
   DataStore<std::string> dataStore{};
 
   dataStore.addObserver(
-      [&](std::string oldValue, std::string newValue) -> void {
-        mockControl.call1();
-        ASSERT_EQ(oldValue, "");
-        ASSERT_EQ(newValue, "string");
-      });
-
-  dataStore.addObserver([&](auto oldValue, auto newValue) -> void {
-    mockControl.call2();
+        [&](std::string oldValue, std::string newValue) -> void {
+    mockControl.call1();
     ASSERT_EQ(oldValue, "");
     ASSERT_EQ(newValue, "string");
   });
+
+  dataStore.addObserver([&](auto oldValue, auto newValue) -> void {
+      mockControl.call2();
+      ASSERT_EQ(oldValue, "");
+      ASSERT_EQ(newValue, "string");
+    });
   dataStore.setData("string");
 }

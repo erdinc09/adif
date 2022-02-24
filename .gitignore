@@ -35,3 +35,4 @@
 CMakeLists.txt.user
 cmake-build
 .vscode
+build

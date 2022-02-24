@@ -24,6 +24,8 @@ DECLARE_DATA_STORE_SUB_CLASS(ProviderDataStore);
 DECLARE_DATA_STORE_SUB_CLASS(ProviderDataStore1);
 DECLARE_DATA_STORE_SUB_CLASS(ProviderDataStore2);
 
+using ::testing::Exactly;
+
 class Interface1to2 {
  public:
   virtual void callInterface1to2() = 0;
@@ -40,6 +42,8 @@ class IControl {
   virtual void call2() const = 0;
   virtual void call3() const = 0;
   virtual void call4() const = 0;
+
+  virtual ~IControl() {}
 };
 
 class Class1 : Provides(Interface1to2) {
@@ -126,7 +130,6 @@ class MockIControl : public IControl {
   MOCK_METHOD(void, call3, (), (override, const));
   MOCK_METHOD(void, call4, (), (override, const));
 };
-using ::testing::Exactly;
 
 TEST(DataStoreInjection, dataStoresShouldBeInjected) {
   DataStore<std::string> stringDs{};
