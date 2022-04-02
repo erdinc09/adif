@@ -31,24 +31,29 @@ class DataStore {
   DataStore& operator=(DataStore&&) = delete;
 
   void setData(const T& data) {
-       std::lock_guard<std::mutex> guard{dataMutex};
-       this->data = std::make_unique<T>(data);
+    std::lock_guard<std::mutex> guard{dataMutex};
+    std::unique_ptr<const T> oldData = std::move(this->data);
+    this->data = std::make_unique<T>(data);
+    std::for_each(observers.begin(), observers.end(),
+                  [&](T_Observer<T> observer) {
+                    observer(*oldData.get(), *this->data.get());
+                  });
   }
 
   void setData(T&& data) {
-       std::lock_guard<std::mutex> guard{dataMutex};
-       std::unique_ptr<const T> oldData = std::move(this->data);
-       this->data = std::make_unique<T>(std::move(data));
-
-       std::for_each(observers.begin(), observers.end(),
-                     [&](T_Observer<T> observer) {
-                       observer(*oldData.get(), *this->data.get());
-                     });
+    std::lock_guard<std::mutex> guard{dataMutex};
+    std::unique_ptr<const T> oldData = std::move(this->data);
+    this->data = std::make_unique<T>(std::move(data));
+    std::for_each(observers.begin(), observers.end(),
+                  [&](T_Observer<T> observer) {
+                    observer(*oldData.get(), *this->data.get());
+                  });
   }
 
-  void addObserver(std::function<void(const T oldData, const T newData)> observer) {
-       std::lock_guard<std::mutex> guard{dataMutex};
-       observers.push_back(observer);
+  void addObserver(
+      std::function<void(const T oldData, const T newData)> observer) {
+    std::lock_guard<std::mutex> guard{dataMutex};
+    observers.push_back(observer);
   }
 
   const T& getData() {
